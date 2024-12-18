@@ -6,6 +6,8 @@ Hi this is a little Tutorial to how to setup a Linx Ubunthu Server and the secur
 
 ## 🔧 Requiremnts 
 
+- Internet Connection
+- Basic Knowledge of Linx Ubunthu
 - A linux machine local or remote
 - A computer for connect to the server
 
