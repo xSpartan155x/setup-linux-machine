@@ -152,20 +152,66 @@ sshd:
 ```sh
 auth required pam_google_authenticator.so
 ```
-## Step 12: Restart SSH service
+
+## Step 12: Install Fail2Ban
 
 ```sh
-sudo systemctl restart sshd
-sudo systemctl status sshd
+sudo apt install fail2ban
 ```
-or
+## Step 13: Setup Fail2Ban
 
 ```sh
-sudo systemctl restart ssh
-sudo systemctl status ssh
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+sudo nano /etc/fail2ban/jail.local
+```
+jail.local: 
+
+ssh = The SSH port previously configured
+
+```sh
+[sshd]
+enabled = true
+port = ssh
+filter = sshd
+logpath = /var/log/auth.log
+maxretry = 3
+bantime = -1
+action = ufw-ban
+```
+Create custom config fail2ban
+
+```sh
+sudo nano /etc/fail2ban/action.d/ufw-ban.conf
 ```
 
-## Step 13: Test SSH connection with Google Authenticator
+ufw-ban.conf:
+
+```sh
+[Definition]
+actionstart = ufw
+actionstop = ufw
+actionban = ufw insert 1 deny from <ip> to any
+actionunban = ufw delete deny from <ip> to any
+```
+
+## Step 14: Restart SSH UFW FAIL2BAN
+
+```sh
+sudo systemctl restart ssh/sshd
+sudo systemctl restart fail2ban
+sudo systemctl restart ufw
+```
+
+## Step 15: Check status
+
+```sh
+sudo systemctl status ssh/sshd
+sudo systemctl status fail2ban
+sudo systemctl status fail2ban sshd
+sudo systemctl status ufw
+```
+
+## Step 16: Test SSH connection with Google Authenticator
 
 ```sh
 ssh -p Port user@hostname
