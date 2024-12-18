@@ -177,8 +177,4 @@ I hope this helped you
 
 ___
 
-<<<<<<< HEAD
 💻💖 by [xSpartan155x](https://github.com/xSpartan155x)
-=======
-💻💖 by [xSpartan155x](https://github.com/xSpartan155x)
->>>>>>> b54a360547994ad9f1f4dcbf56539348529fd394
