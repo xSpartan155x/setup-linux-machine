@@ -217,7 +217,7 @@ sudo systemctl status ufw
 ssh -p Port user@hostname
 ```
 
-## Thank you for visiting!
+## ❤️ Thank you for visiting!
 
 I hope this helped you
 
