@@ -1,6 +1,6 @@
 ![](./assets/img/header.jpg)
 
-# Setup Linx Ubunthu Server 
+# 💻 Setup Linx Ubunthu Server 
 
 Hi this is a little Tutorial to how to setup a Linx Ubunthu Server and the security.
 
