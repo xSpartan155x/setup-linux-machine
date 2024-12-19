@@ -1,13 +1,13 @@
 ![](./assets/img/header.jpg)
 
-# 💻 Setup Linx Ubunthu Server 
-
-Hi this is a little Tutorial to how to setup a Linx Ubunthu Server and the security.
+# 💻 Setup Linux Ubuntu Server 
+![](https://skillicons.dev/icons?i=linux,ubuntu)
+Hi this is a little Tutorial to how to setup a Linux Ubuntu Server and the security.
 
 ## 🔧 Requiremnts 
 
 - Internet Connection
-- Basic Knowledge of Linx Ubunthu
+- Basic Knowledge of Linx Ubuntu
 - A linux machine local or remote
 - A computer for connect to the server
 
