@@ -1,7 +1,6 @@
 ![](./assets/img/header.jpg)
 
-# 💻 Setup Linux Ubuntu Server 
-![](https://skillicons.dev/icons?i=linux,ubuntu)
+# 💻 Setup Linux Ubuntu Server ![](https://skillicons.dev/icons?i=linux,ubuntu)
 
 Hi this is a little Tutorial to how to setup a Linux Ubuntu Server and the security.
 
