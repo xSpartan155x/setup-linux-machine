@@ -1,91 +1,102 @@
 #!/bin/bash
 
-# var
-ssh="22"
+# Ensure script is run as root
+if [ "$EUID" -ne 0 ]; then
+  echo "Please run as root"
+  exit
+fi
 
-# todo insert custom var
+# Prompt for SSH port
+read -p "Enter the SSH port to configure: " SSH_PORT
 
-# todo ask for confirm and if the ssh key is in the /home/user/ dir
-
-# Update System
-sudo apt update && sudo apt upgrade -y
-echo Sistema aggiornato 
+# Update and upgrade the system
+echo "Updating and upgrading the system..."
+apt update && apt upgrade -y
 sleep 2s
 
-# Install Firewall
-sudo apt install ufw
-echo UFW Installato
+# Install UFW and Fail2Ban
+echo "Installing UFW and Fail2Ban..."
+apt install -y ufw fail2ban libpam-google-authenticator
 sleep 2s
 
-# Install Fail2ban
-sudo apt install fail2ban
-echo fail2ban Installato
+# Configure SSH
+SSHD_CONFIG="/etc/ssh/sshd_config"
+echo "Configuring SSH..."
+sed -i "s/^#\?Port .*/Port $SSH_PORT/" $SSHD_CONFIG
+sed -i "s/^#\?PubkeyAuthentication .*/PubkeyAuthentication yes/" $SSHD_CONFIG
+sed -i "s/^#\?AuthorizedKeysFile .*/AuthorizedKeysFile .ssh\/authorized_keys/" $SSHD_CONFIG
+sed -i "s/^#\?PermitRootLogin .*/PermitRootLogin no/" $SSHD_CONFIG
+sed -i "s/^#\?ChallengeResponseAuthentication .*/ChallengeResponseAuthentication yes/" $SSHD_CONFIG
+sed -i "s/^#\?PasswordAuthentication .*/PasswordAuthentication no/" $SSHD_CONFIG
+sed -i "s/^#\?UsePAM .*/UsePAM yes/" $SSHD_CONFIG
+
+echo "AuthenticationMethods publickey,keyboard-interactive" >> $SSHD_CONFIG
+
+sleep 2s
+# Handle included config files
+if grep -q "^Include /etc/ssh/sshd_config.d/*.conf" $SSHD_CONFIG; then
+  echo "Checking included config files for contradictions..."
+  for file in /etc/ssh/sshd_config.d/*.conf; do
+    if [ -f "$file" ]; then
+      sed -i "s/^#\?Port .*/Port $SSH_PORT/" $file
+      sed -i "s/^#\?PubkeyAuthentication .*/PubkeyAuthentication yes/" $file
+      sed -i "s/^#\?PasswordAuthentication .*/PasswordAuthentication no/" $file
+    fi
+  done
+fi
+
+sleep 2s
+# Restart SSH
+systemctl restart sshd
+
+# Configure UFW
+echo "Configuring UFW..."
+ufw default deny incoming
+ufw default allow outgoing
+ufw limit $SSH_PORT
+read -p "Enter additional ports to allow (comma-separated, or leave blank): " ADDITIONAL_PORTS
+IFS="," read -ra PORTS <<< "$ADDITIONAL_PORTS"
+for PORT in "${PORTS[@]}"; do
+  ufw allow $PORT
+done
+ufw enable
 sleep 2s
 
-# Install 2FA Authenticator
-sudo apt install libpam-google-authenticator
-echo googleAuthenticator Installato
+# Configure Google Authenticator
+echo "Configuring Google Authenticator..."
+google-authenticator -t -d -f -r 3 -R 30 -W
+PAM_SSHD="/etc/pam.d/sshd"
+if ! grep -q "auth required pam_google_authenticator.so" $PAM_SSHD; then
+  echo "auth required pam_google_authenticator.so" >> $PAM_SSHD
+fi
 sleep 2s
 
-# Set ssh key
-cat ~/*.pub >> ~/.ssh/authorized_keys
-chmod 700 ~/.ssh
-chmod 600 ~/.ssh/authorized_keys
-rm ~/*.pub
-echo "Ssh Keys set" 
-sleep 2s
+# Configure Fail2Ban
+echo "Configuring Fail2Ban..."
+cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+sed -i "s/^\[sshd\].*/[sshd]\nenabled = true\nport = $SSH_PORT\nfilter = sshd\nlogpath = \/var\/log\/auth.log\nmaxretry = 3\nbantime = -1\naction = ufw-ban/" /etc/fail2ban/jail.local
 
-# Set UFW
-sudo ufw default deny incoming
-sudo ufw default allow outgoing
-sudo ufw limit $ssh
-sudo ufw enable
-sudo systemctl start ufw
-sudo systemctl status ufw
-echo "Firewall set"
-sleep 2s
+cat <<EOF > /etc/fail2ban/action.d/ufw-ban.conf
+[Definition]
+actionstart = ufw
+actionstop = ufw
+actionban = ufw insert 1 deny from <ip> to any
+actionunban = ufw delete deny from <ip> to any
+EOF
 
-# Set Fail2ban
-sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
-sudo nano /etc/fail2ban/jail.local
-# todo add write on file
-# [sshd]
-# enabled = true
-# port = ssh
-# filter = sshd
-# logpath = /var/log/auth.log
-# maxretry = 3
-# bantime = -1
-# action = ufw-ban
-sudo nano /etc/fail2ban/action.d/ufw-ban.conf
-# todo add write on file
-# [Definition]
-# actionstart = ufw
-# actionstop = ufw
-# actionban = ufw insert 1 deny from <ip> to any
-# actionunban = ufw delete deny from <ip> to any
-echo "Fail2ban set"
 sleep 2s
+systemctl restart fail2ban
+systemctl restart ufw
 
-# Set Google Authenticator
-sudo google-authenticator
-sudo nano /etc/pam.d/sshd
-# todo add write on file
-# auth required pam_google_authenticator.so
-echo "Goole Authenticato set"
-sleep 2s
+# Restart services and check status
+systemctl restart sshd
+systemctl restart fail2ban
+systemctl restart ufw
 
-# Restart All
-sudo systemctl restart ssh/sshd
-sudo systemctl restart fail2ban
-sudo systemctl restart ufw
-echo "All System restarted"
-sleep 2s
+# Show statuses
+echo "Checking statuses..."
+systemctl status sshd --no-pager
+systemctl status fail2ban --no-pager
+systemctl status ufw --no-pager
 
-# Check Status
-sudo systemctl status ssh/sshd
-sudo systemctl status fail2ban
-sudo systemctl status fail2ban sshd
-sudo systemctl status ufw
-echo "All Online"
-sleep 2s
+echo "Setup complete."
