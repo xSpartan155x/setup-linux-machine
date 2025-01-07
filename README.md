@@ -20,12 +20,12 @@ sudo apt update && sudo apt upgrade -y
 ## ⚪️ Step 2: Generate a ssh key pair on client machine
 
 ```sh
-ssh-keygen -t rsa -b 4096
+ssh-keygen -t rsa -b 4096 -C "Email or Identifier"
 ```
 or
 
 ```sh
-ssh-keygen -t ed25519
+ssh-keygen -t ed25519 -C "Email or Identifier"
 ```
 ## Diffrence between RSA and Ed25519
 
