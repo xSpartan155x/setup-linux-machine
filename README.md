@@ -17,7 +17,7 @@ Hi this is a little Tutorial to how to setup a Linux Ubuntu Server and the secur
 - color 🟧 less important
 - color 🟩 non important
 
-## ⚪️ <span style="color:orange">Step 1: Update and Upgrade the System</span>
+## ⚪️ <span style="color:orange!important">Step 1: Update and Upgrade the System</span>
 
 ```sh 
 sudo apt update && sudo apt upgrade -y 
