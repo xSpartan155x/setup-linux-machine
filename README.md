@@ -13,17 +13,19 @@ Hi this is a little Tutorial to how to setup a Linux Ubuntu Server and the secur
 
 ## 🟧 Legend
 
+For a better protection all steps are important.
+
 - color 🟥 important
 - color 🟧 less important
 - color 🟩 non important
 
-## ⚪️ <span style="color:orange!important">Step 1: Update and Upgrade the System</span>
+## ⚪️ Step 1: Update and Upgrade the System 🟧
 
 ```sh 
 sudo apt update && sudo apt upgrade -y 
 ```
 
-## ⚪️ Step 2: Generate a ssh key pair on client machine
+## ⚪️ Step 2: Generate a ssh key pair on client machine 🟥
 
 ```sh
 ssh-keygen -t rsa -b 4096 -C "Email or Identifier"
@@ -48,7 +50,7 @@ ssh-keygen -t ed25519 -C "Email or Identifier"
 - Much faster signing and verification.
 - Designed for modern use cases, with a focus on efficiency and resistance to side-channel attacks.
 
-## ⚪️ Step 3: Copy the public key to the server
+## ⚪️ Step 3: Copy the public key to the server 🟥
 
 ```sh
 scp ~/.ssh/keyid.pub username@server:~/nameofuser_ed25519.pub
@@ -56,25 +58,25 @@ scp ~/.ssh/keyid.pub username@server:~/nameofuser_rsa.pub
 
 ```
 
-## ⚪️ Step 4: Add the public key to the server
+## ⚪️ Step 4: Add the public key to the server 🟥
 
 ``` sh
 cat ~/nameofuser_ed25519.pub >> ~/.ssh/authorized_keys
 ```
 
-## ⚪️ Step 5: Change the permissions of the authorized_keys file
+## ⚪️ Step 5: Change the permissions of the authorized_keys file 🟥
 
 ```sh
 chmod 700 ~/.ssh
 chmod 600 ~/.ssh/authorized_keys
 ```
 
-## ⚪️ Step 6: Remove the public key file from the home directory
+## ⚪️ Step 6: Remove the public key file from the home directory 🟥
 
 ```sh
 rm ~/nameofuser_ed25519.pub
 ```
-## ⚪️ Step 7: change sshd_config
+## ⚪️ Step 7: change sshd_config 🟥
 
 ```sh
 sudo nano /etc/ssh/sshd_config
@@ -99,7 +101,7 @@ check the path to the config and remove any contradiction
 sudo nano /etc/ssh/sshd_config.d/*.conf
 ```
 
-## ⚪️ Step 8: Install UFW (Uncomplicated Firewall)
+## ⚪️ Step 8: Install UFW (Uncomplicated Firewall) 🟥
 
 ```sh
 sudo apt install ufw
@@ -114,7 +116,7 @@ or
 ```sh
 sudo ufw version
 ```
-## ⚪️ Step 9: Setup UFW
+## ⚪️ Step 9: Setup UFW 🟥
 
 ssh = The SSH port previously configured
 ports = Ports you need to be opend in your machine
@@ -127,19 +129,19 @@ sudo ufw allow ports
 sudo ufw enable
 ```
 
-## ⚪️ Step 10: Start and Check status UFW
+## ⚪️ Step 10: Start and Check status UFW 🟥
 
 ```sh
 sudo systemctl start ufw
 sudo systemctl status ufw
 ```
-## ⚪️ Step 11: Install google authenticator
+## ⚪️ Step 11: Install google authenticator 🟧
 
 ```sh
 sudo apt install libpam-google-authenticator
 ```
 
-## ⚪️ Step 12: Configure Google Authenticator
+## ⚪️ Step 12: Configure Google Authenticator 🟧
 
 ```sh
 sudo google-authenticator
@@ -161,12 +163,12 @@ sshd:
 auth required pam_google_authenticator.so
 ```
 
-## ⚪️ Step 13: Install Fail2Ban
+## ⚪️ Step 13: Install Fail2Ban 🟧
 
 ```sh
 sudo apt install fail2ban
 ```
-## ⚪️ Step 14: Setup Fail2Ban
+## ⚪️ Step 14: Setup Fail2Ban 🟧
 
 ```sh
 sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
@@ -202,7 +204,7 @@ actionban = ufw insert 1 deny from <ip> to any
 actionunban = ufw delete deny from <ip> to any
 ```
 
-## ⚪️ Step 15: Restart SSH UFW FAIL2BAN
+## ⚪️ Step 15: Restart SSH UFW FAIL2BAN 🟧
 
 ```sh
 sudo systemctl restart ssh/sshd
@@ -210,7 +212,7 @@ sudo systemctl restart fail2ban
 sudo systemctl restart ufw
 ```
 
-## ⚪️ Step 16: Check status
+## ⚪️ Step 16: Check status 🟥
 
 ```sh
 sudo systemctl status ssh/sshd
@@ -219,7 +221,7 @@ sudo systemctl status fail2ban sshd
 sudo systemctl status ufw
 ```
 
-## ⚪️ Step 17: Test SSH connection with Google Authenticator
+## ⚪️ Step 17: Test SSH connection with Google Authenticator 🟥
 
 ```sh
 ssh -p Port user@hostname
