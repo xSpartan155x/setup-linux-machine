@@ -1,4 +1,4 @@
-![](./assets/img/header.jpg)
+![](./assets/img/header.png)
 
 # 💻 Setup Linux Ubuntu Server ![](https://skillicons.dev/icons?i=linux,ubuntu)
 
