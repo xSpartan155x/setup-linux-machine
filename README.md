@@ -11,7 +11,13 @@ Hi this is a little Tutorial to how to setup a Linux Ubuntu Server and the secur
 - A linux machine local or remote
 - A computer for connect to the server
 
-## ⚪️ Step 1: Update and Upgrade the System
+## 🟧 Legend
+
+- color 🟥 important
+- color 🟧 less important
+- color 🟩 non important
+
+## ⚪️ <span style="color:orange">Step 1: Update and Upgrade the System</span>
 
 ```sh 
 sudo apt update && sudo apt upgrade -y 
